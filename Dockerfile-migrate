@@ -1,5 +1,5 @@
 # Build with:
-#   TAG=$(git rev-parse --short HEAD)
+#   TAG=$(git rev-parse HEAD)
 #   docker build -f Dockerfile-migrate -t app/migrate --build-arg GIT_COMMIT=$TAG .
 #
 # Inspect

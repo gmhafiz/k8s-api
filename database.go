@@ -3,6 +3,7 @@ package app
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 
 	_ "github.com/jackc/pgx/stdlib"
@@ -20,10 +21,15 @@ func DB() *sql.DB {
 		cfg.Database.Pass,
 	)
 
-	db, err := sql.Open("pgx", dsn)
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
+	}
+
+	_, err = db.Exec("SELECT true")
+	if err != nil {
+		log.Panic(err)
 	}
 
 	return db

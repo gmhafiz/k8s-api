@@ -3,6 +3,7 @@ package app
 import (
 	"database/sql"
 	"embed"
+	"log"
 
 	"github.com/pressly/goose/v3"
 )
@@ -26,6 +27,6 @@ func Migrator(db *sql.DB) *Migrate {
 
 func (m *Migrate) Up() {
 	if err := goose.Up(m.DB, "database/migrations"); err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
