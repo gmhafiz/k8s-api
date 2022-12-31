@@ -1,0 +1,8 @@
+###
+GET http://localhost:3080/healthz
+
+###
+GET http://localhost:3080/ready
+
+###
+GET http://localhost:3080/randoms

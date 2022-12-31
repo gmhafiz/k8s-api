@@ -1,0 +1,32 @@
+# Build with:
+#   docker build -f Dockerfile-migrate -t app/migrate .
+# Push
+#   docker push gmhafiz/migrate:latest
+# Run with
+#   docker run --rm -it --name migrate app/migrate
+
+
+FROM golang:1.19 AS src
+
+WORKDIR /go/src/app/
+
+# Copy dependencies first to take advantage of Docker caching
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+
+COPY . .
+
+# Insert version using git tag and latest commit hash
+# Build Go Binary
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o ./migrate cmd/migrate/main.go;
+
+FROM gcr.io/distroless/static-debian11
+
+LABEL com.example.maintainers="User <author@example.com>"
+
+WORKDIR /App
+
+COPY --from=src /go/src/app/migrate /App/migrate
+
+ENTRYPOINT ["/App/migrate"]
