@@ -19,7 +19,7 @@ CREATE TABLE randoms
 --     updated_at_column();
 
 
--- CREATE EXTENSION pgcrypto;
+CREATE EXTENSION pgcrypto;
 do $$
     begin
         for r in 1..100000 loop

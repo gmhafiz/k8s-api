@@ -8,6 +8,7 @@
 # Push
 #   docker tag app/migrate gmhafiz/migrate:$TAG
 #   docker push gmhafiz/migrate:$TAG
+#   echo gmhafiz/migrate:$TAG
 #
 # Run with
 #   docker run --rm -it --name migrate app/migrate:$TAG
