@@ -25,7 +25,7 @@ func Migrator(db *sql.DB) *Migrate {
 }
 
 func (m *Migrate) Up() {
-	if err := goose.Up(m.DB, "migrations"); err != nil {
+	if err := goose.Up(m.DB, "database/migrations"); err != nil {
 		panic(err)
 	}
 }

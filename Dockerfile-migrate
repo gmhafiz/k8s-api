@@ -1,10 +1,16 @@
 # Build with:
-#   docker build -f Dockerfile-migrate -t app/migrate .
+#   TAG=$(git rev-parse --short HEAD)
+#   docker build -f Dockerfile-migrate -t app/migrate --build-arg GIT_COMMIT=$TAG .
+#
+# Inspect
+#   docker inspect  app/migrate | jq '.[].ContainerConfig.Labels'
+#
 # Push
-#   docker push gmhafiz/migrate:latest
+#   docker tag app/migrate gmhafiz/migrate:$TAG
+#   docker push gmhafiz/migrate:$TAG
+#
 # Run with
-#   docker run --rm -it --name migrate app/migrate
-
+#   docker run --rm -it --name migrate app/migrate:$TAG
 
 FROM golang:1.19 AS src
 
@@ -24,6 +30,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o ./migrate cmd/migrate/
 FROM gcr.io/distroless/static-debian11
 
 LABEL com.example.maintainers="User <author@example.com>"
+
+ARG GIT_COMMIT=unspecified
+LABEL git_commit=$GIT_COMMIT
 
 WORKDIR /App
 
