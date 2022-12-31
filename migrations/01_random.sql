@@ -22,7 +22,7 @@ CREATE TABLE randoms
 CREATE EXTENSION pgcrypto;
 do $$
     begin
-        for r in 1..100000 loop
+        for r in 1..10000 loop
             insert into randoms(name) values(gen_random_uuid());
         end loop;
     end;
