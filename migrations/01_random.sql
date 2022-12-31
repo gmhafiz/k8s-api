@@ -1,3 +1,5 @@
+-- +goose Up
+-- +goose StatementBegin
 BEGIN;
 
 DROP TABLE IF EXISTS randoms;
@@ -17,7 +19,7 @@ CREATE TABLE randoms
 --     updated_at_column();
 
 
-CREATE EXTENSION pgcrypto;
+-- CREATE EXTENSION pgcrypto;
 do $$
     begin
         for r in 1..100000 loop
@@ -27,3 +29,10 @@ do $$
 $$;
 
 COMMIT;
+-- +goose StatementEnd
+
+
+-- +goose Down
+-- +goose StatementBegin
+DROP TABLE IF EXISTS randoms;
+-- +goose StatementEnd
