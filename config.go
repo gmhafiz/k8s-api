@@ -17,11 +17,11 @@ type Api struct {
 }
 
 type Database struct {
-	Driver  string `default:"postgres"`
+	Driver  string `default:"pgx"`
 	Host    string `default:"localhost"`
-	Port    uint16 `default:"5432"`
-	Name    string `default:"postgres"`
-	User    string `default:"postgres"`
+	Port    uint16 `default:"54315"`
+	Name    string `default:"go8_db"`
+	User    string `default:"user"`
 	Pass    string `default:"password"`
 	SslMode string `default:"disable"`
 }

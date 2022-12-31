@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/jackc/pgx/stdlib"
+	_ "github.com/lib/pq"
 )
 
 func DB() *sql.DB {
