@@ -19,10 +19,10 @@ CREATE TABLE randoms
 --     updated_at_column();
 
 
-CREATE EXTENSION pgcrypto;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 do $$
     begin
-        for r in 1..10000 loop
+        for r in 1..100 loop
             insert into randoms(name) values(gen_random_uuid());
         end loop;
     end;
