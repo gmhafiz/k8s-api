@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 func (s *Server) Healthz(w http.ResponseWriter, r *http.Request) {
@@ -29,6 +30,7 @@ type Random struct {
 }
 
 func (s *Server) Randoms(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(1 * time.Second)
 	rows, err := s.DB.Query(r.Context(), "SELECT * FROM randoms;")
 	if err != nil {
 		msg := fmt.Sprintf(`{"message": "%s"}`, err)
