@@ -25,7 +25,7 @@ func main() {
 	srv.Mux.HandleFunc("/healthz", srv.Healthz)
 	srv.Mux.HandleFunc("/ready", srv.Ready)
 	srv.Mux.Handle("/randoms", app.RateLimiter(srv.Randoms))
-	//srv.Mux.HandleFunc("/randoms", srv.Randoms)
+	srv.Mux.HandleFunc("/randoms", srv.Randoms)
 
 	addr := fmt.Sprintf("%s:%d", srv.Api.Host, srv.Api.Port)
 	log.Printf("running api at %v\n", addr)

@@ -32,7 +32,7 @@ docker build -f Dockerfile-api -t app/api --build-arg GIT_COMMIT=${TAG} .
 Push to a container registry
 
 ```sh
-docker tag app/api gmhafiz/api:${TAG}h
+docker tag app/api gmhafiz/api:${TAG}
 docker push gmhafiz/api:${TAG}
 ```
 Migration needs to happen first
@@ -165,7 +165,7 @@ Run
 locust -f ./locustfile.py --host=http://localhost:3080
 ```
 
-Open  http://0.0.0.0:8089, run the load testing and click on the chart.
+Open  http://0.0.0.0:8089, run the load testing with 16 users and 1 spawn rate. Click "Start Swarming" and click on the chart.
 
 It is on 1 replica at 500MHz and 128MB ram each. Let us ramp up the number of replicas to 4.
 
