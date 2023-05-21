@@ -2,8 +2,9 @@ package app
 
 import (
 	"fmt"
-	"github.com/kelseyhightower/envconfig"
 	"log"
+
+	"github.com/kelseyhightower/envconfig"
 )
 
 type Cfg struct {
@@ -18,11 +19,11 @@ type Api struct {
 
 type Database struct {
 	Driver  string `default:"pgx"`
-	Host    string `default:"localhost"`
-	Port    uint16 `default:"54315"`
-	Name    string `default:"go8_db"`
-	User    string `default:"user"`
-	Pass    string `default:"password"`
+	Host    string `default:"postgresql-dev"`
+	Port    uint16 `default:"5432"`
+	Name    string `default:"app_db"`
+	User    string `default:"app1"`
+	Pass    string `default:"AppPassword"`
 	SslMode string `default:"disable"`
 }
 
