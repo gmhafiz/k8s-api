@@ -30,7 +30,7 @@ type Random struct {
 }
 
 func (s *Server) Randoms(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(1 * time.Second)
+	time.Sleep(100 * time.Millisecond)
 	rows, err := s.DB.Query(r.Context(), "SELECT * FROM randoms;")
 	if err != nil {
 		msg := fmt.Sprintf(`{"message": "%s"}`, err)
