@@ -19,18 +19,7 @@ type Server struct {
 func New(ctx context.Context) *Server {
 	cfg := Config()
 
-	dsn := fmt.Sprintf("postgres://%s:%d/%s?sslmode=%s&user=%s&password=%s",
-		cfg.Database.Host,
-		cfg.Database.Port,
-		cfg.Database.Name,
-		cfg.Database.SslMode,
-		cfg.Database.User,
-		cfg.Database.Pass,
-	)
-
-	pool, err := pgxpool.New(ctx, dsn)
-
-	//conn, err := pgx.Connect(ctx, dsn)
+	pool, err := NewDB(ctx, cfg.Database)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -48,4 +37,17 @@ func New(ctx context.Context) *Server {
 		DB:  pool,
 		Mux: mux,
 	}
+}
+
+func NewDB(ctx context.Context, cfg Database) (*pgxpool.Pool, error) {
+	dsn := fmt.Sprintf("postgres://%s:%d/%s?sslmode=%s&user=%s&password=%s",
+		cfg.Host,
+		cfg.Port,
+		cfg.Name,
+		cfg.SslMode,
+		cfg.User,
+		cfg.Pass,
+	)
+
+	return pgxpool.New(ctx, dsn)
 }

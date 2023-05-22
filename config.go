@@ -18,12 +18,11 @@ type Api struct {
 }
 
 type Database struct {
-	Driver  string `default:"pgx"`
-	Host    string `default:"postgresql-dev"`
-	Port    uint16 `default:"5432"`
-	Name    string `default:"app_db"`
-	User    string `default:"app1"`
-	Pass    string `default:"AppPassword"`
+	Host    string
+	Port    uint16
+	Name    string
+	User    string
+	Pass    string
 	SslMode string `default:"disable"`
 }
 

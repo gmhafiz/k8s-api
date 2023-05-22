@@ -26,6 +26,7 @@ Create new mage
 
 ```sh
 TAG=$(git rev-parse HEAD)
+echo $TAG
 docker build -f Dockerfile-api -t app/api --build-arg GIT_COMMIT=${TAG} .
 ```
 
@@ -43,46 +44,62 @@ docker build -f Dockerfile-migrate -t app/migrate --build-arg GIT_COMMIT="${TAG}
 docker push gmhafiz/migrate:"${TAG}"
 ```
 
-## Database
+## Apply
 
 ```sh
-k apply -f db/local-pv.yaml
-k apply -f db/postgresql-data-claim.yaml
-helm install postgresql-dev -f db/values.yaml bitnami/postgresql
-
-k apply -f db-secret.yaml
+kubectl apply -f configmap.yaml
+kubectl apply -f pv.yaml
+kubectl apply -f pvc.yaml
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
 ```
 
-## Deployment
 
 ```sh
-k apply -f server.yaml
-watch -n 1 kubectl get deploy
+k get po
 ```
 
-# Service
-
 ```sh
-k apply -f server-service.yaml
-watch -n 1 kubectl get svc
+k logs -f postgres-7c6b976c95-wjls2
+```
+
+```
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2023-05-22 02:45:53.640 UTC [1] LOG:  starting PostgreSQL 15.1 (Debian 15.1-1.pgdg110+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 10.2.1-6) 10.2.1 20210110, 64-bit
+2023-05-22 02:45:53.641 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2023-05-22 02:45:53.641 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2023-05-22 02:45:53.646 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2023-05-22 02:45:53.653 UTC [27] LOG:  database system was shut down at 2023-05-22 02:40:23 UTC
+2023-05-22 02:45:53.659 UTC [1] LOG:  database system is ready to accept connections
 ```
 
 # Port Forward
 
-Database
+Connect
+
 ```sh
-export POSTGRES_ADMIN_PASSWORD=$(kubectl get secret --namespace default postgresql-dev -o jsonpath="{.data.postgres-password}" | base64 -d)
+export POSTGRES_PASSWORD=$(kubectl get cm --namespace default db-secret-credentials -o jsonpath="{.data.POSTGRES_PASSWORD}")
 
-export POSTGRES_PASSWORD=$(kubectl get secret --namespace default postgresql-dev -o jsonpath="{.data.password}" | base64 -d)
+kubectl run postgresql-dev-client --rm --tty -i --restart='Never' --namespace default --image postgres:15.3 --env="PGPASSWORD=$POSTGRES_PASSWORD" \
+      --command -- psql --host postgres -U app1 -d app_db -p 5432
+```
 
-kubectl port-forward --namespace default svc/postgresql-dev 15432:5432 &
+Port Forward
+
+```sh
+kubectl port-forward --namespace default svc/postgres 45432:5432 &
     PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U app1 -d app_db -p 5432
 ```
 
-Change incoming port to an unused port, in this case `15432`.
+## Migrate
 
+```sh
+kubectl run api-migrate --rm --tty -i --restart='Never' --namespace default --image gmhafiz/migrate:85eb4876d786b3b4f4df32c02ab7f557806f367e --env="PGPASSWORD=$POSTGRES_PASSWORD" \
+      --command -- migrate
+```
 
-Server
+## API Server 
 
 ```sh
 kubectl port-forward deployment/server 3080:3080

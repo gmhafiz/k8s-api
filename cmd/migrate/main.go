@@ -1,13 +1,16 @@
 package main
 
 import (
-	app "github.com/gmhafiz/k8s-api"
 	"log"
+
+	app "github.com/gmhafiz/k8s-api"
 )
 
 func main() {
 	log.Println("starting migrate...")
-	db := app.DB()
+
+	cfg := app.Config()
+	db := app.DB(cfg.Database)
 
 	migrator := app.Migrator(db)
 	migrator.Up()

@@ -37,6 +37,6 @@ LABEL git_commit=$GIT_COMMIT
 
 WORKDIR /App
 
-COPY --from=src /go/src/app/migrate /App/migrate
+COPY --from=src /go/src/app/migrate /usr/local/bin/migrate
 
-ENTRYPOINT ["/App/migrate"]
+ENTRYPOINT ["/usr/local/bin/migrate"]
