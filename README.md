@@ -102,7 +102,7 @@ go install github.com/mikefarah/yq/v4@latest
 ```
 
 ```sh
-kubectl run api-migrate --stdin --tty --rm --restart=Never --namespace default --image gmhafiz/migrate:0690ecbb632b7381300f7ac2c9f82e038046633e --env="DB_HOST=$DB_HOST","DB_PORT=$DB_PORT","DB_NAME=$DB_NAME","DB_USER=$DB_USER","DB_PASS=$DB_PASS" \
+kubectl run api-migrate --stdin --tty --rm --restart=Never --namespace default --image gmhafiz/migrate:d7d5ec67b21d942824e8bba5f294e7998a897c34 --env="DB_HOST=$DB_HOST","DB_PORT=$DB_PORT","DB_NAME=$DB_NAME","DB_USER=$DB_USER","DB_PASS=$DB_PASS" \
       --command -- migrate
 ```
 
