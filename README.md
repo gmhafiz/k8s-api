@@ -41,6 +41,7 @@ Migration needs to happen first
 ```sh
 TAG=$(git rev-parse HEAD)
 docker build -f Dockerfile-migrate -t app/migrate --build-arg GIT_COMMIT="${TAG}" .
+docker tag app/migrate gmhafiz/migrate:${TAG}
 docker push gmhafiz/migrate:"${TAG}"
 ```
 
@@ -94,8 +95,14 @@ kubectl port-forward --namespace default svc/postgres 45432:5432 &
 
 ## Migrate
 
+Install yaml to json
+
 ```sh
-kubectl run api-migrate --rm --tty -i --restart='Never' --namespace default --image gmhafiz/migrate:85eb4876d786b3b4f4df32c02ab7f557806f367e --env="PGPASSWORD=$POSTGRES_PASSWORD" \
+go install github.com/mikefarah/yq/v4@latest
+```
+
+```sh
+kubectl run api-migrate --stdin --tty --rm --restart=Never --namespace default --image gmhafiz/migrate:0690ecbb632b7381300f7ac2c9f82e038046633e --env="DB_HOST=$DB_HOST","DB_PORT=$DB_PORT","DB_NAME=$DB_NAME","DB_USER=$DB_USER","DB_PASS=$DB_PASS" \
       --command -- migrate
 ```
 

@@ -30,10 +30,16 @@ func Config() Cfg {
 	log.Println("reading env")
 
 	var api Api
-	envconfig.MustProcess("API", &api)
+	err := envconfig.Process("API", &api)
+	if err != nil {
+		log.Println("no API config is found")
+	}
 
 	var db Database
-	envconfig.MustProcess("DB", &db)
+	err = envconfig.Process("DB", &db)
+	if err != nil {
+		log.Println("no DB config is found")
+	}
 
 	fmt.Printf("%#v\n", db)
 
