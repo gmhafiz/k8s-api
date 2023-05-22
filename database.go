@@ -18,7 +18,7 @@ func DB(cfg Database) *sql.DB {
 		cfg.Pass,
 	)
 
-	db, err := sql.Open("postgres", dsn)
+	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return nil
 	}

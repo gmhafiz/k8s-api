@@ -22,7 +22,7 @@ create new commit
 git commit -a -m "message"
 ```
 
-Create new mage
+Create new image
 
 ```sh
 TAG=$(git rev-parse HEAD)
@@ -102,8 +102,7 @@ go install github.com/mikefarah/yq/v4@latest
 ```
 
 ```sh
-kubectl run api-migrate --stdin --tty --rm --restart=Never --namespace default --image gmhafiz/migrate:d7d5ec67b21d942824e8bba5f294e7998a897c34 --env="DB_HOST=$DB_HOST","DB_PORT=$DB_PORT","DB_NAME=$DB_NAME","DB_USER=$DB_USER","DB_PASS=$DB_PASS" \
-      --command -- migrate
+kubectl run api-migrate --stdin --tty --rm --restart=Never --namespace default --image gmhafiz/migrate:1d7606b098a1934de318855bb818fa36032bb728 --env="DB_HOST=$DB_HOST","DB_PORT=$DB_PORT","DB_NAME=$DB_NAME","DB_USER=$DB_USER","DB_PASS=$DB_PASS" --command -- migrate
 ```
 
 ## API Server 
