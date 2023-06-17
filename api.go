@@ -72,7 +72,7 @@ func (s *Server) get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) add(w http.ResponseWriter, r *http.Request) {
-	_, err := s.DB.Exec(r.Context(), "INSERT INTO randoms values(gen_random_uuid()); ")
+	_, err := s.DB.Exec(r.Context(), "INSERT INTO randoms (name) values(gen_random_uuid()); ")
 	if err != nil {
 		return
 	}
