@@ -52,6 +52,7 @@ docker push gmhafiz/migrate:"${TAG}"
 
 ## Apply
 
+Deploy a single postgres instance in k8s
 ```sh
 cd db1
 kubectl apply -f configmap.yaml
@@ -61,6 +62,7 @@ kubectl apply -f deployment.yaml
 kubectl apply -f service.yaml
 ```
 
+Check for successful deploy
 
 ```sh
 k get po
@@ -104,6 +106,7 @@ kubectl port-forward --namespace default svc/postgres 45432:5432 &
 Apply secret for our app
 
 ```sh
+cd applications
 k apply -f secret.yaml
 ```
 
@@ -120,7 +123,7 @@ export DB_PASS=$( kubectl get secret --namespace default postgres-secret-config 
 Run a one-off Pod
 
 ```sh
-kubectl run api-migrate --stdin --tty --rm --restart=Never --namespace default --image gmhafiz/migrate:0c0765c78b308b31362b9c6093e7fc254be98d72 --env="DB_HOST=$DB_HOST" --env="DB_PORT=$DB_PORT" --env="DB_NAME=$DB_NAME" --env="DB_USER=$DB_USER" --env="DB_PASS=$DB_PASS" --command -- migrate
+kubectl run api-migrate --stdin --tty --rm --restart=Never --namespace default --image gmhafiz/migrate:${TAG} --env="DB_HOST=$DB_HOST" --env="DB_PORT=$DB_PORT" --env="DB_NAME=$DB_NAME" --env="DB_USER=$DB_USER" --env="DB_PASS=$DB_PASS" --command -- migrate
 ```
 
 Returns
@@ -131,10 +134,18 @@ Returns
 2023/05/22 08:55:19 goose: no migrations to run. current version: 1
 2023/05/22 08:55:19 goose: version 1
 pod "api-migrate" deleted
-
 ```
 
 ## API Server 
+
+```sh
+vim server.yaml # and edit the image tag to the latest SHA commit 
+```
+
+```sh
+kubectl apply -f server.yaml
+kubectl apply -f server-service.yaml
+```
 
 ```sh
 kubectl port-forward deployment/server 3080:3080
@@ -143,8 +154,8 @@ kubectl port-forward deployment/server 3080:3080
 test
 
 ```sh
-curl -v http://localhost:3080/healthz
-curl -v http://localhost:3080/ready
+curl -v http://localhost:3080/healthz # tests if api is up
+curl -v http://localhost:3080/ready   # tests if can connect to database
 ```
 
 Returns
@@ -202,6 +213,24 @@ Returns
 and so on
 ```
 
+# Benchmark
+
+```sh
+wrk -t2 -c8 -d 10s http://localhost:3080/randoms
+```
+
+returns
+
+```
+Running 10s test @ http://localhost:3080/randoms
+  2 threads and 8 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     5.93ms    8.07ms  48.48ms   86.09%
+    Req/Sec     1.25k   152.11     1.60k    68.00%
+  24821 requests in 10.00s, 135.66MB read
+Requests/sec:   2481.24
+Transfer/sec:     13.56MB
+```
 
 # Load Testing
 

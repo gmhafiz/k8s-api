@@ -6,6 +6,7 @@ require (
 	github.com/jackc/pgx/v5 v5.2.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/pressly/goose/v3 v3.7.0
+	github.com/rs/cors v1.9.0
 )
 
 require (

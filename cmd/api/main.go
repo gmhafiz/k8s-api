@@ -22,9 +22,9 @@ func main() {
 	ctx := context.Background()
 	srv := app.New(ctx)
 
-	srv.Mux.HandleFunc("/healthz", srv.Healthz)
-	srv.Mux.HandleFunc("/ready", srv.Ready)
-	srv.Mux.HandleFunc("/randoms", srv.Randoms)
+	srv.Mux.Handle("/healthz", cors(http.HandlerFunc(srv.Healthz)))
+	srv.Mux.Handle("/ready", cors(http.HandlerFunc(srv.Ready)))
+	srv.Mux.Handle("/randoms", cors(http.HandlerFunc(srv.Randoms)))
 
 	addr := fmt.Sprintf("%s:%d", srv.Api.Host, srv.Api.Port)
 	log.Printf("running api at %v\n", addr)
@@ -34,4 +34,21 @@ func main() {
 	}
 
 	defer srv.DB.Close()
+}
+
+func cors(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
+		if (*r).Method == "OPTIONS" {
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Authorization")
 }
