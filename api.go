@@ -29,7 +29,16 @@ type Random struct {
 }
 
 func (s *Server) Randoms(w http.ResponseWriter, r *http.Request) {
-	rows, err := s.DB.Query(r.Context(), "SELECT * FROM randoms;")
+	if r.Method == http.MethodGet {
+		s.get(w, r)
+	} else if r.Method == http.MethodPost {
+		s.add(w, r)
+	}
+
+}
+
+func (s *Server) get(w http.ResponseWriter, r *http.Request) {
+	rows, err := s.DB.Query(r.Context(), "SELECT * FROM randoms ORDER BY id DESC LIMIT 10;")
 	if err != nil {
 		msg := fmt.Sprintf(`{"message": "%s"}`, err)
 		log.Printf("error with query: %v", err)
@@ -60,4 +69,11 @@ func (s *Server) Randoms(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, _ = w.Write(resp)
+}
+
+func (s *Server) add(w http.ResponseWriter, r *http.Request) {
+	_, err := s.DB.Exec(r.Context(), "INSERT INTO randoms values(gen_random_uuid()); ")
+	if err != nil {
+		return
+	}
 }

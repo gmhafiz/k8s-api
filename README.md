@@ -154,8 +154,8 @@ kubectl port-forward deployment/server 3080:3080
 test
 
 ```sh
-curl -v http://localhost:3080/healthz # tests if api is up
-curl -v http://localhost:3080/ready   # tests if can connect to database
+curl -v http://localhost:3081/healthz # tests if api is up
+curl -v http://localhost:3081/ready   # tests if can connect to database
 ```
 
 Returns
