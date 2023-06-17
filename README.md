@@ -2,16 +2,21 @@
 
 Build with:
 
-    docker build -t app/api .
+```sh
+docker build -f Dockerfile-api -t app/api .
+```
 
 Run with
 
-    docker run --rm -it -p 3080:3080 --name api app/api
+```sh
+docker run --rm -it -p 3080:3080 --name api app/api
+```
 
 Healthiness
 
-    curl -v localhost:3080/healthz
-
+```sh
+curl -v localhost:3080/healthz
+```
 
 # K8s
 
@@ -48,6 +53,7 @@ docker push gmhafiz/migrate:"${TAG}"
 ## Apply
 
 ```sh
+cd db1
 kubectl apply -f configmap.yaml
 kubectl apply -f pv.yaml
 kubectl apply -f pvc.yaml
@@ -95,14 +101,37 @@ kubectl port-forward --namespace default svc/postgres 45432:5432 &
 
 ## Migrate
 
-Install yaml to json
+Apply secret for our app
 
 ```sh
-go install github.com/mikefarah/yq/v4@latest
+k apply -f secret.yaml
 ```
 
+Assign the values to environment variables
+
 ```sh
-kubectl run api-migrate --stdin --tty --rm --restart=Never --namespace default --image gmhafiz/migrate:1d7606b098a1934de318855bb818fa36032bb728 --env="DB_HOST=$DB_HOST","DB_PORT=$DB_PORT","DB_NAME=$DB_NAME","DB_USER=$DB_USER","DB_PASS=$DB_PASS" --command -- migrate
+export DB_HOST=$(kubectl get secret --namespace default postgres-secret-config -o jsonpath="{.data.host}" | base64 -d)
+export DB_PORT=$( kubectl get secret --namespace default postgres-secret-config -o jsonpath="{.data.port}" | base64 -d)
+export DB_NAME=$( kubectl get secret --namespace default postgres-secret-config -o jsonpath="{.data.name}" | base64 -d)
+export DB_USER=$( kubectl get secret --namespace default postgres-secret-config -o jsonpath="{.data.user}" | base64 -d)
+export DB_PASS=$( kubectl get secret --namespace default postgres-secret-config -o jsonpath="{.data.password}" | base64 -d)
+```
+
+Run a one-off Pod
+
+```sh
+kubectl run api-migrate --stdin --tty --rm --restart=Never --namespace default --image gmhafiz/migrate:0c0765c78b308b31362b9c6093e7fc254be98d72 --env="DB_HOST=$DB_HOST" --env="DB_PORT=$DB_PORT" --env="DB_NAME=$DB_NAME" --env="DB_USER=$DB_USER" --env="DB_PASS=$DB_PASS" --command -- migrate
+```
+
+Returns
+```
+2023/05/22 08:55:19 starting migrate...
+2023/05/22 08:55:19 reading env
+2023/05/22 08:55:19 OK    01_random.sql
+2023/05/22 08:55:19 goose: no migrations to run. current version: 1
+2023/05/22 08:55:19 goose: version 1
+pod "api-migrate" deleted
+
 ```
 
 ## API Server 
@@ -115,6 +144,7 @@ test
 
 ```sh
 curl -v http://localhost:3080/healthz
+curl -v http://localhost:3080/ready
 ```
 
 Returns

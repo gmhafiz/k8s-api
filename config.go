@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/kelseyhightower/envconfig"
@@ -40,8 +39,6 @@ func Config() Cfg {
 	if err != nil {
 		log.Println("no DB config is found")
 	}
-
-	fmt.Printf("%#v\n", db)
 
 	return Cfg{api, db}
 }

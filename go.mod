@@ -6,7 +6,6 @@ require (
 	github.com/jackc/pgx/v5 v5.2.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/pressly/goose/v3 v3.7.0
-	golang.org/x/time v0.3.0
 )
 
 require (
