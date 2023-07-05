@@ -34,7 +34,6 @@ func (s *Server) Randoms(w http.ResponseWriter, r *http.Request) {
 	} else if r.Method == http.MethodPost {
 		s.add(w, r)
 	}
-
 }
 
 func (s *Server) get(w http.ResponseWriter, r *http.Request) {
