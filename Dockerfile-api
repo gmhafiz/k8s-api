@@ -1,14 +1,14 @@
 # Build with:
 #   TAG=$(git rev-parse HEAD)
-#   docker build -f Dockerfile-api -t gmhafiz/api .
+#   docker build -f Dockerfile-api -t gmhafiz/api:$TAG .
 # Push
-#   docker push gmhafiz/api:latest
+#   docker push gmhafiz/api:$TAG
 # Run with
-#   docker run --rm -it -p 3080:3080 --name api gmhafiz/api
+#   docker run --rm -it -p 3080:3080 --name api gmhafiz/api:$TAG
 # Healthiness
 #   curl -v localhost:3080/healthz
 
-FROM golang:1.20 AS src
+FROM golang:1.20 AS build
 
 WORKDIR /go/src/app/
 
@@ -27,7 +27,7 @@ FROM gcr.io/distroless/static-debian11
 
 LABEL com.example.maintainers="User <author@example.com>"
 
-COPY --from=src /go/src/app/api /usr/local/bin/api
+COPY --from=build /go/src/app/api /usr/local/bin/api
 
 EXPOSE 3080
 

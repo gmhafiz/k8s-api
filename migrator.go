@@ -16,7 +16,6 @@ type Migrate struct {
 }
 
 func Migrator(db *sql.DB) *Migrate {
-
 	m := &Migrate{
 		DB: db,
 	}
@@ -31,6 +30,16 @@ func Migrator(db *sql.DB) *Migrate {
 
 func (m *Migrate) Up() {
 	if err := goose.Up(m.DB, "migrations"); err != nil {
+		log.Panic(err)
+	}
+
+	if err := goose.Version(m.DB, "migrations"); err != nil {
+		log.Panic(err)
+	}
+}
+
+func (m *Migrate) Down() {
+	if err := goose.Down(m.DB, "migrations"); err != nil {
 		log.Panic(err)
 	}
 

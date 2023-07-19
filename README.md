@@ -88,7 +88,7 @@ PostgreSQL Database directory appears to contain a database; Skipping initializa
 Connect
 
 ```sh
-export POSTGRES_PASSWORD=$(kubectl get cm --namespace default db-secret-credentials -o jsonpath="{.data.POSTGRES_PASSWORD}")
+export POSTGRES_PASSWORD=$(kubectl get cm --namespace default db-credentials -o jsonpath="{.data.POSTGRES_PASSWORD}")
 
 kubectl run postgresql-dev-client --rm --tty -i --restart='Never' --namespace default --image postgres:15.3 --env="PGPASSWORD=$POSTGRES_PASSWORD" \
       --command -- psql --host postgres -U app1 -d app_db -p 5432
@@ -130,7 +130,7 @@ Returns
 ```
 2023/05/22 08:55:19 starting migrate...
 2023/05/22 08:55:19 reading env
-2023/05/22 08:55:19 OK    01_random.sql
+2023/05/22 08:55:19 OK    20230302080119_create_randoms_table.sql
 2023/05/22 08:55:19 goose: no migrations to run. current version: 1
 2023/05/22 08:55:19 goose: version 1
 pod "api-migrate" deleted
