@@ -11,7 +11,7 @@ func main() {
 	log.Println("starting migrate...")
 
 	var migrateCommand string
-	flag.StringVar(&migrateCommand, "go", "up", "migrate up")
+	flag.StringVar(&migrateCommand, "go", "up", "-go up")
 	flag.Parse()
 
 	cfg := app.Config()

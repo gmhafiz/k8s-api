@@ -23,10 +23,7 @@ COPY . .
 # Build Go Binary
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o ./api cmd/api/main.go
 
-#FROM gcr.io/distroless/static-debian11
-FROM debian:12
-
-RUN apt update && apt install -y curl netcat-traditional
+FROM gcr.io/distroless/static-debian11
 
 LABEL com.example.maintainers="User <author@example.com>"
 

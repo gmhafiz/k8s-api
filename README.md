@@ -1,161 +1,18 @@
-# Docker
-
-Build with:
+# Run
 
 ```sh
-docker build -f Dockerfile-api -t app/api .
-```
-
-Run with
-
-```sh
-docker run --rm -it -p 3080:3080 --name api app/api
-```
-
-Healthiness
-
-```sh
-curl -v localhost:3080/healthz
-```
-
-# K8s
-
-## Push New Image
-
-create new commit
-```sh
-git commit -a -m "message"
-```
-
-Create new image
-
-```sh
-TAG=$(git rev-parse HEAD)
-echo $TAG
-docker build -f Dockerfile-api -t app/api --build-arg GIT_COMMIT=${TAG} .
-```
-
-Push to a container registry
-
-```sh
-docker tag app/api gmhafiz/api:${TAG}
-docker push gmhafiz/api:${TAG}
-```
-Migration needs to happen first
-
-```sh
-TAG=$(git rev-parse HEAD)
-docker build -f Dockerfile-migrate -t app/migrate --build-arg GIT_COMMIT="${TAG}" .
-docker tag app/migrate gmhafiz/migrate:${TAG}
-docker push gmhafiz/migrate:"${TAG}"
-```
-
-## Apply
-
-Deploy a single postgres instance in k8s
-```sh
-cd db1
-kubectl apply -f configmap.yaml
-kubectl apply -f pv.yaml
-kubectl apply -f pvc.yaml
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
-```
-
-Check for successful deploy
-
-```sh
-k get po
+export DB_HOST=0.0.0.0
+export DB_NAME=postgres
+export DB_USER=postgres
+export DB_PASS=
+export DB_PORT=5432
+go run cmd/api/migrate.go
+go run cmd/api/main.go
 ```
 
 ```sh
-k logs -f postgres-7c6b976c95-wjls2
-```
-
-```
-PostgreSQL Database directory appears to contain a database; Skipping initialization
-
-2023-05-22 02:45:53.640 UTC [1] LOG:  starting PostgreSQL 15.1 (Debian 15.1-1.pgdg110+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 10.2.1-6) 10.2.1 20210110, 64-bit
-2023-05-22 02:45:53.641 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
-2023-05-22 02:45:53.641 UTC [1] LOG:  listening on IPv6 address "::", port 5432
-2023-05-22 02:45:53.646 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
-2023-05-22 02:45:53.653 UTC [27] LOG:  database system was shut down at 2023-05-22 02:40:23 UTC
-2023-05-22 02:45:53.659 UTC [1] LOG:  database system is ready to accept connections
-```
-
-# Port Forward
-
-Connect
-
-```sh
-export POSTGRES_PASSWORD=$(kubectl get cm --namespace default db-credentials -o jsonpath="{.data.POSTGRES_PASSWORD}")
-
-kubectl run postgresql-dev-client --rm --tty -i --restart='Never' --namespace default --image postgres:15.3 --env="PGPASSWORD=$POSTGRES_PASSWORD" \
-      --command -- psql --host postgres -U app1 -d app_db -p 5432
-```
-
-Port Forward
-
-```sh
-kubectl port-forward --namespace default svc/postgres 45432:5432 &
-    PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U app1 -d app_db -p 5432
-```
-
-## Migrate
-
-Apply secret for our app
-
-```sh
-cd applications
-k apply -f secret.yaml
-```
-
-Assign the values to environment variables
-
-```sh
-export DB_HOST=$(kubectl get secret --namespace default postgres-secret-config -o jsonpath="{.data.host}" | base64 -d)
-export DB_PORT=$( kubectl get secret --namespace default postgres-secret-config -o jsonpath="{.data.port}" | base64 -d)
-export DB_NAME=$( kubectl get secret --namespace default postgres-secret-config -o jsonpath="{.data.name}" | base64 -d)
-export DB_USER=$( kubectl get secret --namespace default postgres-secret-config -o jsonpath="{.data.user}" | base64 -d)
-export DB_PASS=$( kubectl get secret --namespace default postgres-secret-config -o jsonpath="{.data.password}" | base64 -d)
-```
-
-Run a one-off Pod
-
-```sh
-kubectl run api-migrate --stdin --tty --rm --restart=Never --namespace default --image gmhafiz/migrate:${TAG} --env="DB_HOST=$DB_HOST" --env="DB_PORT=$DB_PORT" --env="DB_NAME=$DB_NAME" --env="DB_USER=$DB_USER" --env="DB_PASS=$DB_PASS" --command -- migrate
-```
-
-Returns
-```
-2023/05/22 08:55:19 starting migrate...
-2023/05/22 08:55:19 reading env
-2023/05/22 08:55:19 OK    20230302080119_create_randoms_table.sql
-2023/05/22 08:55:19 goose: no migrations to run. current version: 1
-2023/05/22 08:55:19 goose: version 1
-pod "api-migrate" deleted
-```
-
-## API Server 
-
-```sh
-vim server.yaml # and edit the image tag to the latest SHA commit 
-```
-
-```sh
-kubectl apply -f server.yaml
-kubectl apply -f server-service.yaml
-```
-
-```sh
-kubectl port-forward deployment/server 3080:3080
-```
-
-test
-
-```sh
-curl -v http://localhost:3081/healthz # tests if api is up
-curl -v http://localhost:3081/ready   # tests if can connect to database
+curl -v http://localhost:3080/healthz # tests if api is up
+curl -v http://localhost:3080/ready   # tests if can connect to database
 ```
 
 Returns
@@ -190,27 +47,18 @@ Returns
 * Connection #0 to host localhost left intact
 [
   {
-    "id": 1,
-    "name": "d1cf935e-803f-4bf0-a757-f38e649304e2"
+    "id": 100,
+    "name": "e256f93d-e47e-47a8-8159-6ddd1ae12640"
   },
   {
-    "id": 2,
-    "name": "8968275a-f91b-485a-ae93-55e301343461"
+    "id": 99,
+    "name": "d91a5c34-d82e-43a9-acdb-403a3d3d040e"
   },
   {
-    "id": 3,
-    "name": "782919e3-1927-48b1-b3b8-ba7d85ce15a1"
+    "id": 98,
+    "name": "40f0e53f-c841-4a4e-b37e-1015123177dc"
   },
-  {
-    "id": 4,
-    "name": "4de3f3d5-f8d8-4ecf-b3a6-903f90fea32f"
-  },
-  {
-    "id": 5,
-    "name": "72a03a4c-f028-45d5-a952-992115b42f6a"
-  },
-
-and so on
+  and so on
 ```
 
 # Benchmark
@@ -225,11 +73,11 @@ returns
 Running 10s test @ http://localhost:3080/randoms
   2 threads and 8 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     5.93ms    8.07ms  48.48ms   86.09%
-    Req/Sec     1.25k   152.11     1.60k    68.00%
-  24821 requests in 10.00s, 135.66MB read
-Requests/sec:   2481.24
-Transfer/sec:     13.56MB
+    Latency   221.10us   67.03us   1.84ms   86.30%
+    Req/Sec    17.94k   666.12    18.85k    74.26%
+  360656 requests in 10.10s, 295.11MB read
+Requests/sec:  35708.37
+Transfer/sec:     29.22MB
 ```
 
 # Load Testing
@@ -248,11 +96,3 @@ locust -f ./locustfile.py --host=http://localhost:3080
 ```
 
 Open  http://0.0.0.0:8089, run the load testing with 16 users and 1 spawn rate. Click "Start Swarming" and click on the chart.
-
-It is on 1 replica at 500MHz and 128MB ram each. Let us ramp up the number of replicas to 4.
-
-While having the chart opened, run the following
-
-```sh
-k apply -f server.yaml
-```

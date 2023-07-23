@@ -11,14 +11,6 @@ CREATE TABLE randoms
     primary key (id)
 );
 
--- CREATE or replace TRIGGER updated_at
---     BEFORE UPDATE
---     ON randoms
---     FOR EACH ROW
--- EXECUTE PROCEDURE
---     updated_at_column();
-
-
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 do $$
     begin
