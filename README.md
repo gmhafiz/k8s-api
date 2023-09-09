@@ -1,14 +1,23 @@
 # Run
 
+Fill in the settings into environment variables according to your postgres credentials
+
 ```sh
 export DB_HOST=0.0.0.0
 export DB_NAME=postgres
 export DB_USER=postgres
 export DB_PASS=
 export DB_PORT=5432
+```
+
+Run migration to create the tables before running the api
+
+```sh
 go run cmd/api/migrate.go
 go run cmd/api/main.go
 ```
+
+Test if api is working
 
 ```sh
 curl -v http://localhost:3080/healthz # tests if api is up
@@ -96,3 +105,8 @@ locust -f ./locustfile.py --host=http://localhost:3080
 ```
 
 Open  http://0.0.0.0:8089, run the load testing with 16 users and 1 spawn rate. Click "Start Swarming" and click on the chart.
+
+
+# Kubernetes Deployment
+
+See http://localhost:1314/blog/deploy-applications-in-kubernetes/#backend

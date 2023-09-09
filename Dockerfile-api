@@ -8,7 +8,7 @@
 # Healthiness
 #   curl -v localhost:3080/healthz
 
-FROM golang:1.20 AS build
+FROM golang:1.21 AS build
 
 WORKDIR /go/src/app/
 
@@ -23,7 +23,7 @@ COPY . .
 # Build Go Binary
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o ./api cmd/api/main.go
 
-FROM gcr.io/distroless/static-debian11
+FROM gcr.io/distroless/static-debian11:nonroot
 
 LABEL com.example.maintainers="User <author@example.com>"
 
